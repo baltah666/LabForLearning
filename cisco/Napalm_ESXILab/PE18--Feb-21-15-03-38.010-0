@@ -1,0 +1,293 @@
+
+!
+! Last configuration change at 15:03:28 UTC Sun Feb 21 2021 by admin
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname PE18
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ gns3group
+ server name tacacsgui
+ server name tacacsgui2
+ ip vrf forwarding mgm
+ ip tacacs source-interface GigabitEthernet0/0
+!
+aaa authentication login default group gns3group local
+aaa authentication enable default group gns3group none
+aaa authorization exec default group gns3group none 
+aaa authorization commands 1 default group gns3group none 
+aaa accounting exec default start-stop group gns3group
+aaa accounting commands 15 default start-stop group gns3group
+aaa accounting connection default start-stop group gns3group
+!
+!
+!
+!
+!
+aaa session-id common
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+ip vrf VPN01392
+ description Network Products EE Tenant sero_4g_node_ci_s1
+ rd 10.221.15.53:1392
+ route-target export 500:1392
+ route-target import 500:1392
+!
+ip vrf VPN01394
+ description Network Products EE Tenant sero_4g_node_ci_sitelan
+ rd 10.221.15.69:1394
+ route-target export 500:1394
+ route-target import 500:1394
+!
+ip vrf mgm
+ rd 65000:1
+ route-target export 65000:1
+ route-target import 65000:1
+!
+!
+!
+!
+ip domain list vrf mgm cisco.com
+ip domain lookup source-interface GigabitEthernet0/0
+ip domain name cisco.com
+ip name-server vrf mgm 192.168.1.90
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+archive
+ path ftp://10.137.1.119/test//cisco/Napalm_ESXILab/$h-$t
+ write-memory
+username admin privilege 15 password 0 cisco
+!
+redundancy
+!
+lldp run
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 18.18.18.18 255.255.255.255
+ ip ospf 1 area 0
+!
+interface GigabitEthernet0/0
+ ip vrf forwarding mgm
+ ip address dhcp
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.2
+ encapsulation dot1Q 2
+ ip vrf forwarding VPN01392
+ ip address 10.221.15.53 255.255.255.252
+ ip ospf 1392 area 0
+!
+interface GigabitEthernet0/1.113
+ encapsulation dot1Q 113
+ ip vrf forwarding VPN01394
+ ip address 10.221.15.69 255.255.255.252
+ ip ospf 1394 area 0
+!
+interface GigabitEthernet0/2
+ ip address 172.16.1.6 255.255.255.252
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+ mpls ip
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/6
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/7
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/8
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1392 vrf VPN01392
+ redistribute bgp 500 subnets
+!
+router ospf 1394 vrf VPN01394
+ redistribute bgp 500 subnets
+ default-information originate
+!
+router ospf 1
+ router-id 18.18.18.18
+ network 172.16.1.4 0.0.0.3 area 0
+!
+router bgp 500
+ bgp log-neighbor-changes
+ neighbor 11.11.11.11 remote-as 500
+ neighbor 11.11.11.11 update-source Loopback0
+ neighbor 22.22.22.22 remote-as 500
+ neighbor 22.22.22.22 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 11.11.11.11 activate
+  neighbor 11.11.11.11 send-community extended
+  neighbor 22.22.22.22 activate
+  neighbor 22.22.22.22 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf VPN01392
+  redistribute connected
+  redistribute ospf 1392
+ exit-address-family
+ !
+ address-family ipv4 vrf VPN01394
+  redistribute connected
+  redistribute ospf 1394
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+ip ftp source-interface GigabitEthernet0/0
+ip ftp username testuser1
+ip ftp password gns3
+no ip http server
+no ip http secure-server
+ip dns view vrf mgm default
+ip route vrf VPN01394 0.0.0.0 0.0.0.0 10.10.10.1
+!
+!
+!
+mpls ldp router-id Loopback0
+tacacs server tacacsgui
+ address ipv4 192.168.1.55
+ key cisco
+tacacs server tacacsgui2
+ address ipv4 192.168.1.57
+ key cisco
+!
+!
+!
+control-plane
+!
+banner exec 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner incoming 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner login 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ exec-timeout 0 0
+ transport input telnet ssh
+!
+no scheduler allocate
+!
+end
