@@ -1,0 +1,309 @@
+#
+# Module devmgr configuration.
+#
+configure snmp sysName "al-sw5"
+configure snmp sysContact "https://www.extremenetworks.com/support/"
+configure timezone name CET 60 autodst name CEST begins every last sunday march at 2 0 ends every last sunday october at 3 0
+configure sys-recovery-level switch reset
+
+#
+# Module vlan configuration.
+#
+configure vlan default delete ports all
+configure vr VR-Default delete ports 1-19
+configure vr VR-Default add ports 1-19
+configure vlan default delete ports 1-19
+configure jumbo-frame-size size 9000
+create vlan "lan_10_137_8_0"
+configure vlan lan_10_137_8_0 tag 116
+create vlan "lan_10_137_9_0"
+configure vlan lan_10_137_9_0 tag 110
+enable jumbo-frame ports 1
+enable jumbo-frame ports 2
+enable jumbo-frame ports 3
+enable jumbo-frame ports 4
+enable jumbo-frame ports 5
+enable jumbo-frame ports 6
+enable jumbo-frame ports 7
+enable jumbo-frame ports 8
+enable jumbo-frame ports 9
+enable jumbo-frame ports 10
+enable jumbo-frame ports 11
+enable jumbo-frame ports 12
+enable jumbo-frame ports 13
+enable jumbo-frame ports 14
+enable jumbo-frame ports 15
+enable jumbo-frame ports 16
+enable jumbo-frame ports 17
+enable jumbo-frame ports 18
+enable jumbo-frame ports 19
+configure port 1 redundant 2 link off
+configure vlan lan_10_137_8_0 add ports 1-2,5 tagged  
+configure vlan lan_10_137_8_0 add ports 6-7 untagged  
+configure vlan lan_10_137_9_0 add ports 1-2,5 tagged  
+
+#
+# Module mcmgr configuration.
+#
+
+#
+# Module otm configuration.
+#
+
+#
+# Module fdb configuration.
+#
+configure fdb agingtime 3660
+
+#
+# Module rtmgr configuration.
+#
+enable icmp useredirects
+
+#
+# Module policy configuration.
+#
+configure policy slices tci-overwrite 0
+
+#
+# Module aaa configuration.
+#
+configure tacacs primary server 192.168.1.55 49 client-ip 10.137.1.118 vr VR-Mgmt
+configure tacacs primary shared-secret encrypted "#$dyJTzKYLaLAds3fvs8NEBTzDv8d9lQ=="
+configure tacacs secondary server 192.168.1.57 49 client-ip 10.137.1.118 vr VR-Mgmt
+configure tacacs secondary shared-secret encrypted "#$dyJTzKYLaLAds3fvs8NEBTzDv8d9lQ=="
+configure tacacs-accounting primary server 192.168.1.55 49 client-ip 10.137.1.118 vr VR-Mgmt
+configure tacacs-accounting primary shared-secret encrypted "#$PzrVfc4OKG41CjMCtGmdx0kOnTDbmA=="
+configure tacacs-accounting secondary server 192.168.1.57 49 client-ip 10.137.1.118 vr VR-Mgmt
+configure tacacs-accounting secondary shared-secret encrypted "#$PzrVfc4OKG41CjMCtGmdx0kOnTDbmA=="
+enable tacacs
+enable tacacs-accounting
+enable tacacs-authorization
+
+#
+# Module acl configuration.
+#
+
+
+
+
+#
+# Module bfd configuration.
+#
+
+#
+# Module bgp configuration.
+#
+
+#
+# Module cfgmgr configuration.
+#
+enable cli config-logging
+
+#
+# Module dnsAnalytics configuration.
+#
+
+#
+# Module dosprotect configuration.
+#
+
+#
+# Module dot1ag configuration.
+#
+
+#
+# Module eaps configuration.
+#
+
+#
+# Module edp configuration.
+#
+
+#
+# Module elrp configuration.
+#
+
+#
+# Module ems configuration.
+#
+
+#
+# Module epm configuration.
+#
+
+#
+# Module erps configuration.
+#
+
+#
+# Module esrp configuration.
+#
+
+#
+# Module etmon configuration.
+#
+
+#
+# Module exsshd configuration.
+#
+enable ssh2
+
+#
+# Module hal configuration.
+#
+configure ports 1 debounce time 0
+configure ports 2 debounce time 0
+configure ports 3 debounce time 0
+configure ports 4 debounce time 0
+configure ports 5 debounce time 0
+configure ports 6 debounce time 0
+configure ports 7 debounce time 0
+configure ports 8 debounce time 0
+configure ports 9 debounce time 0
+configure ports 10 debounce time 0
+configure ports 11 debounce time 0
+configure ports 12 debounce time 0
+configure ports 13 debounce time 0
+configure ports 14 debounce time 0
+configure ports 15 debounce time 0
+configure ports 16 debounce time 0
+configure ports 17 debounce time 0
+configure ports 18 debounce time 0
+configure ports 19 debounce time 0
+
+#
+# Module idMgr configuration.
+#
+
+#
+# Module ipSecurity configuration.
+#
+
+#
+# Module isis configuration.
+#
+
+#
+# Module lldp configuration.
+#
+configure lldp port 1 advertise port-description
+configure lldp port 2 advertise port-description
+configure lldp port 3 advertise port-description
+configure lldp port 4 advertise port-description
+configure lldp port 5 advertise port-description
+configure lldp port 6 advertise port-description
+configure lldp port 7 advertise port-description
+configure lldp port 8 advertise port-description
+configure lldp port 9 advertise port-description
+configure lldp port 10 advertise port-description
+configure lldp port 11 advertise port-description
+configure lldp port 12 advertise port-description
+configure lldp port 13 advertise port-description
+configure lldp port 14 advertise port-description
+configure lldp port 15 advertise port-description
+configure lldp port 16 advertise port-description
+configure lldp port 17 advertise port-description
+configure lldp port 18 advertise port-description
+configure lldp port 19 advertise port-description
+
+#
+# Module mrp configuration.
+#
+
+#
+# Module msdp configuration.
+#
+
+#
+# Module netLogin configuration.
+#
+
+#
+# Module netTools configuration.
+#
+configure dns-client add name-server 8.8.8.8 vr VR-Mgmt
+configure dns-client add name-server 192.168.1.90 vr VR-Mgmt
+configure dns-client add domain-suffix lab.local 
+enable dhcp vlan lan_10_137_8_0
+enable dhcp vlan lan_10_137_9_0
+enable dhcp vlan Mgmt
+
+#
+# Module nodealias configuration.
+#
+
+#
+# Module ntp configuration.
+#
+
+#
+# Module ospf configuration.
+#
+
+#
+# Module ospfv3 configuration.
+#
+
+#
+# Module pim configuration.
+#
+
+#
+# Module poe configuration.
+#
+
+#
+# Module rip configuration.
+#
+
+#
+# Module ripng configuration.
+#
+
+#
+# Module snmpMaster configuration.
+#
+configure snmpv3 engine-id 03:0c:00:2b:df:fa:00
+
+#
+# Module stp configuration.
+#
+disable stpd s0
+
+#
+# Module techSupport configuration.
+#
+
+#
+# Module telnetd configuration.
+#
+
+#
+# Module tftpd configuration.
+#
+
+#
+# Module thttpd configuration.
+#
+disable web http
+
+#
+# Module twamp configuration.
+#
+
+#
+# Module vmt configuration.
+#
+
+#
+# Module vrrp configuration.
+#
+
+#
+# Module vsm configuration.
+#
+
+#
+# Module vpex configuration.
+#
