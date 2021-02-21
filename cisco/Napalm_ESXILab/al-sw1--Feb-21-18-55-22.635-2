@@ -1,0 +1,384 @@
+
+!
+! Last configuration change at 15:20:43 UTC Sun Feb 21 2021 by admin
+!
+version 15.2
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+no service password-encryption
+service compress-config
+!
+hostname al-sw1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+username admin privilege 15 password 0 cisco
+aaa new-model
+!
+!
+aaa group server tacacs+ gns3group
+ server name tacacsgui
+ server name tacacsgui2
+ ip vrf forwarding mgm
+ ip tacacs source-interface GigabitEthernet0/0
+!
+aaa authentication login default group gns3group local
+aaa authentication enable default group gns3group none
+aaa authorization exec default group gns3group none 
+aaa authorization commands 1 default group gns3group none 
+aaa accounting exec default start-stop group gns3group
+aaa accounting commands 15 default start-stop group gns3group
+aaa accounting connection default start-stop group gns3group
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone UTC 1 0
+clock summer-time PDT recurring
+!
+!
+!
+!
+!
+vtp mode transparent
+udld enable
+
+ip arp inspection vlan 110,113-114,116
+!
+ip vrf mgm
+ rd 65000:1
+ route-target export 65000:1
+ route-target import 65000:1
+!
+!
+!
+ip dhcp snooping vlan 100-101
+no ip dhcp snooping information option
+ip dhcp snooping
+ip domain-list vrf mgm cisco.com
+ip cef
+ipv6 nd raguard policy HOST_POLICY
+!
+no ipv6 cef
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause sfp-config-mismatch
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause port-mode-failure
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause pppoe-ia-rate-limit
+errdisable recovery cause mac-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause inline-power
+errdisable recovery cause arp-inspection
+errdisable recovery cause link-monitor-failure
+errdisable recovery cause oam-remote-failure
+errdisable recovery cause loopback
+errdisable recovery cause psp
+archive
+ path ftp://10.137.1.119/test//cisco/Napalm_ESXILab/$h-$t
+ write-memory
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+vlan 110
+ name 1392-lan_10_137_9_0
+!
+vlan 113
+ name 1394-lan_10_137_3_0
+!
+vlan 114
+ name 1394-lan_10_137_4_0
+!
+vlan 116
+ name 1392-lan_10_137_8_0
+!
+vlan 117
+ name 1392-lan_10_137_6_0
+lldp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 11.11.1.1 255.255.255.255
+!
+interface GigabitEthernet0/1
+ switchport access vlan 114
+ switchport mode access
+ media-type rj45
+ negotiation auto
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/2
+ switchport access vlan 114
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet0/3
+ switchport access vlan 114
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet0/0
+ no switchport
+ ip vrf forwarding mgm
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet1/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet1/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet1/2
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet1/3
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet2/0
+ switchport access vlan 113
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet2/1
+ switchport access vlan 113
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet2/2
+ switchport access vlan 113
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet2/3
+ switchport access vlan 113
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet3/0
+ switchport access vlan 116
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet3/1
+ switchport access vlan 116
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 100
+ media-type rj45
+ negotiation auto
+ ipv6 nd raguard attach-policy HOST_POLICY
+ spanning-tree portfast edge
+ ip verify source
+ ip dhcp snooping limit rate 100
+!
+interface GigabitEthernet3/2
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet3/3
+ media-type rj45
+ negotiation auto
+!
+interface Vlan1
+ description In-band Management
+ no ip address
+ shutdown
+!
+interface Vlan113
+ ip address 10.137.3.10 255.255.255.0
+!
+interface Vlan114
+ ip address 10.137.4.10 255.255.255.0
+!
+interface Vlan117
+ ip address 10.137.6.10 255.255.255.0
+!
+ip default-gateway 192.168.122.1
+ip forward-protocol nd
+!
+no ip http server
+ip http secure-server
+!
+ip ftp source-interface GigabitEthernet0/0
+ip ftp username testuser1
+ip ftp password gns3
+!
+!
+!
+!
+snmp-server community python1 RO
+snmp-server community python2 RW
+tacacs server tacacsgui
+ address ipv4 192.168.1.55
+ key cisco
+tacacs server tacacsgui2
+ address ipv4 192.168.1.57
+ key cisco
+!
+!
+!
+control-plane
+!
+banner exec 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner incoming 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner login 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+!
+line con 0
+ exec-timeout 0 0
+line aux 0
+line vty 0 4
+ exec-timeout 0 0
+ transport input telnet ssh
+!
+ntp update-calendar
+ntp server 87.81.181.2
+!
+end
