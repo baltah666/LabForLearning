@@ -1,0 +1,219 @@
+
+!
+! Last configuration change at 13:16:44 UTC Tue Feb 22 2022
+! NVRAM config last updated at 13:16:45 UTC Tue Feb 22 2022
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname SW16
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGM
+ rd 10:10
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition VPN512
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+ip name-server 8.8.8.8
+ip name-server 8.8.4.4
+ip cef
+no ipv6 cef
+!
+!
+archive
+ path ftp://root:gns3@192.168.1.198:/Cisco_IOS/$h-$t
+ write-memory
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.1.0.16 255.255.255.255
+ ip ospf 1 area 0
+!
+interface Loopback16
+ ip address 16.16.16.16 255.255.255.255
+ ip ospf 1 area 0
+!
+interface GigabitEthernet0/0
+ no switchport
+ ip address 10.1.16.16 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 0
+ negotiation auto
+!
+interface GigabitEthernet0/1
+ no switchport
+ ip address 10.2.16.16 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 0
+ negotiation auto
+!
+interface GigabitEthernet0/2
+ no switchport
+ ip address 10.5.16.16 255.255.255.0
+ ip ospf priority 100
+ ip ospf 1 area 0
+ negotiation auto
+!
+interface GigabitEthernet0/3
+ no switchport
+ ip address 10.1.160.2 255.255.255.0
+ ip ospf 1 area 0
+ negotiation auto
+!
+interface GigabitEthernet1/2
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet1/3
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet1/0
+ no switchport
+ vrf forwarding MGM
+ ip address 192.168.1.65 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1/1
+ no switchport
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet2/0
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet2/1
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet2/2
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet2/3
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet3/0
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet3/1
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet3/2
+ media-type rj45
+ negotiation auto
+!
+interface GigabitEthernet3/3
+ media-type rj45
+ negotiation auto
+!
+router ospf 1
+ distance ospf external 201
+!
+router bgp 65012
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.1.0.1 remote-as 65012
+ neighbor 10.1.0.1 update-source Loopback0
+ neighbor 10.1.0.2 remote-as 65012
+ neighbor 10.1.0.2 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.1.0.1 activate
+  neighbor 10.1.0.2 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip ftp source-interface GigabitEthernet1/0
+ip route vrf MGM 0.0.0.0 0.0.0.0 192.168.1.1
+!
+!
+!
+!
+!
+control-plane
+!
+banner exec 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner incoming 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner login 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+!
+line con 0
+ exec-timeout 0 0
+line aux 0
+line vty 0 4
+ login
+!
+!
+end

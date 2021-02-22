@@ -1,0 +1,208 @@
+
+!
+! Last configuration change at 13:37:27 UTC Tue Feb 22 2022
+! NVRAM config last updated at 13:37:29 UTC Tue Feb 22 2022
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname IOS14
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGM
+ rd 10:10
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition VPN100
+ rd 100:100
+ route-target export 100:100
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition VPN101
+ rd 101:101
+ !
+ address-family ipv4
+  route-target export 100:100
+  route-target import 100:100
+ exit-address-family
+!
+vrf definition VPN512
+ rd 512:512
+ route-target export 512:512
+ route-target import 512:512
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+archive
+ path ftp://root:gns3@192.168.1.198:/Cisco_IOS/$h-$t
+ write-memory
+username admin privilege 15 password 0 cisco
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 14.14.14.14 255.255.255.255
+ ip ospf 1 area 0
+!
+interface Loopback4
+ ip address 10.4.140.14 255.255.255.0
+ ip ospf 1 area 0
+!
+interface GigabitEthernet0/0
+ ip address 10.4.14.14 255.255.255.0
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ vrf forwarding VPN100
+ ip address 10.4.100.14 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ vrf forwarding VPN101
+ ip address 10.4.101.14 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ vrf forwarding MGM
+ ip address 192.168.1.64 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 100 vrf VPN100
+ capability vrf-lite
+ network 10.4.0.0 0.0.255.255 area 0
+!
+router ospf 101 vrf VPN101
+ capability vrf-lite
+ network 10.4.0.0 0.0.255.255 area 0
+!
+router ospf 1
+!
+ip forward-protocol nd
+!
+!
+ip ftp source-interface GigabitEthernet0/3
+ip http server
+ip http authentication local
+no ip http secure-server
+ip route vrf VPN100 0.0.0.0 0.0.0.0 10.4.100.4
+ip route vrf VPN101 0.0.0.0 0.0.0.0 10.4.101.4
+ip route vrf MGM 0.0.0.0 0.0.0.0 192.168.1.1
+ip ssh version 2
+!
+!
+!
+!
+control-plane
+!
+banner exec 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner incoming 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner login 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ exec-timeout 0 0
+ login local
+ transport input all
+!
+no scheduler allocate
+!
+end
