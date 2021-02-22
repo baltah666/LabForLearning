@@ -1,0 +1,69 @@
+system
+ host-name             vSmart
+ system-ip             10.200.1.11
+ site-id               700
+ admin-tech-on-failure
+ sp-organization-name  "viptela sdwan"
+ organization-name     "viptela sdwan"
+ vbond 10.10.0.3
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$siwKBQ==$wT2lUa9BSreDPI6gB8sl4E6PAJoVXgMbgv/whJ8F1C6sWdRazdxorYYTLrL6syiG6qnLABTnrE96HJiKF6QRq1
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+ archive
+  path     ftp://root:gns3@192.168.1.198:/
+  interval 300
+  vpn      512
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+!
+banner
+ login "Authorized User Only!"
+ motd  "Welcome to Next GEN  Ne"
+!
+vpn 0
+ interface eth0
+  ip address 10.10.0.4/24
+  tunnel-interface
+   allow-service all
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service stun
+  !
+  no shutdown
+ !
+ ip route 0.0.0.0/0 10.10.0.1
+!
+vpn 512
+ interface eth1
+  ip address 192.168.1.42/24
+  no shutdown
+ !
+!

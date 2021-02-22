@@ -1,0 +1,201 @@
+
+!
+! Last configuration change at 13:22:50 UTC Thu Feb 4 2021
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname IOS13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition VPN100
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition VPN101
+ rd 101:101
+ route-target export 101:101
+ route-target import 101:101
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition VPN512
+ rd 512:512
+ route-target export 512:512
+ route-target import 512:512
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+archive
+ path ftp://root:gns3@192.168.1.198:/$h-$t
+ write-memory
+username admin privilege 15 password 0 cisco
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.3.130.13 255.255.255.0
+!
+interface Loopback13
+ ip address 13.13.13.13 255.255.255.255
+!
+interface Loopback113
+ vrf forwarding VPN100
+ ip address 10.113.3.1 255.255.255.255
+ ip ospf 100 area 0
+!
+interface GigabitEthernet0/0
+ vrf forwarding VPN512
+ ip address dhcp
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address 10.3.13.13 255.255.255.0
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ vrf forwarding VPN100
+ ip address 10.3.100.13 255.255.255.0
+ ip ospf 100 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ vrf forwarding VPN101
+ ip address 10.3.101.13 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 100 vrf VPN100
+ capability vrf-lite
+ network 10.3.0.0 0.0.255.255 area 0
+!
+router ospf 101 vrf VPN101
+ capability vrf-lite
+ network 10.3.0.0 0.0.255.255 area 0
+!
+router ospf 1
+!
+ip forward-protocol nd
+!
+!
+ip ftp source-interface GigabitEthernet0/0
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf VPN100 0.0.0.0 0.0.0.0 10.3.100.3
+ip route vrf VPN101 0.0.0.0 0.0.0.0 10.3.101.3
+!
+!
+!
+!
+control-plane
+!
+banner exec 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner incoming 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+banner login 
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ exec-timeout 0 0
+ login local
+ transport input all
+!
+no scheduler allocate
+!
+end

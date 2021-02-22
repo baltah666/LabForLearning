@@ -1,0 +1,155 @@
+system
+ host-name               vEdge5
+ system-ip               10.200.1.5
+ site-id                 500
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "viptela sdwan"
+ organization-name       "viptela sdwan"
+ clock timezone America/Chicago
+ vbond 10.10.0.3
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$siwKBQ==$wT2lUa9BSreDPI6gB8sl4E6PAJoVXgMbgv/whJ8F1C6sWdRazdxorYYTLrL6syiG6qnLABTnrE96HJiKF6QRq1
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+ archive
+  path     ftp://root:gns3@192.168.1.198:/Vedge
+  interval 300
+  vpn      512
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type sha1-hmac ah-sha1-hmac
+ !
+!
+banner
+ login "Authorized User Only!"
+ motd  "Welcome to the next Gen of Networking"
+!
+vpn 0
+ name "Transport VPN"
+ router
+  bgp 65005
+   address-family ipv4-unicast
+    network 172.31.15.0/24
+   !
+   neighbor 172.31.15.1
+    no shutdown
+    remote-as 100
+    address-family ipv4-unicast
+    !
+   !
+  !
+ !
+ interface ge0/1
+  description MPLS_INTERFACE
+  ip address 172.31.15.2/24
+  tunnel-interface
+   encapsulation ipsec
+   color mpls restrict
+   allow-service all
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+!
+vpn 1
+ router
+  ospf
+   default-information originate
+   timers spf 200 1000 10000
+   redistribute omp
+   area 0
+    interface ge0/2
+    exit
+   exit
+  !
+ !
+ interface ge0/2
+  ip address 10.5.15.5/24
+  no shutdown
+ !
+ ip route 10.5.150.0/24 10.5.15.15
+ ip route 15.15.15.15/32 10.5.15.15
+!
+vpn 100
+ router
+  ospf
+   timers spf 200 1000 10000
+   redistribute omp
+   area 0
+    interface ge0/4
+    exit
+   exit
+  !
+ !
+ interface ge0/4
+  ip address 10.5.100.5/24
+  no shutdown
+ !
+ omp
+  advertise ospf external
+ !
+!
+vpn 101
+ router
+  ospf
+   timers spf 200 1000 10000
+   redistribute omp
+   area 0
+    interface ge0/3
+    exit
+   exit
+  !
+ !
+ interface ge0/3
+  ip address 10.5.101.5/24
+  no shutdown
+ !
+ omp
+  advertise ospf external
+ !
+!
+vpn 512
+ name MGMT
+ interface eth0
+  ip address 192.168.1.46/24
+  no shutdown
+ !
+!
