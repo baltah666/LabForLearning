@@ -1,0 +1,83 @@
+system
+ host-name               vbond
+ system-ip               10.200.1.12
+ site-id                 700
+ admin-tech-on-failure
+ no route-consistency-check
+ organization-name       "viptela sdwan"
+ clock timezone America/Los_Angeles
+ vbond 10.10.0.3 local
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  usergroup tenantadmin
+  !
+  user admin
+   password $6$b7uNZQ5asK7jTY84$DOAdlReVFn/cTX31noEKTNcQGD6e4iujCYd8QQCRLB1P1aOwiIPXJg.vkmTwn1cVM9tkkb0U8BssNqJqeJqkn.
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+ archive
+  path     ftp://root:gns3@192.168.1.198:/vbound
+  interval 300
+  vpn      512
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type ah-sha1-hmac sha1-hmac
+ !
+!
+vpn 0
+ interface ge0/0
+  description Connected-vBond-GE0/0-VPN0
+  ip address 10.10.0.3/24
+  ipv6 dhcp-client
+  tunnel-interface
+   encapsulation ipsec
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+ ip route 0.0.0.0/0 10.10.0.1
+!
+vpn 512
+ interface eth0
+  description Connected-vBond-ETH0-VPN512
+  ip address 192.168.1.41/24
+  ipv6 dhcp-client
+  no shutdown
+ !
+ ip route 0.0.0.0/0 192.168.1.1
+!
